@@ -533,6 +533,82 @@ function Get-BusinessProcessTypes
 	}
 }
 
+function Get-TcmUriInPublication
+{
+    <#
+    .Synopsis
+    Change publication of given TcmUri.
+
+    .Description
+    Change publication of given TcmUri to publication from TargetPubUri.
+
+    .Inputs	
+	[string] tcmUri: tcmUri to convert 
+	[string] targetPubUri: target publication TcmUri or integer that represent publication id
+	[string] version: optional version for versioned items
+
+    .Outputs
+    Returns string that represent converted TcmUri
+
+    .Link
+    Get the latest version of this script from the following URL:
+    https://github.com/pkjaer/tridion-powershell-modules
+
+    .Example
+    Get-TridionTcmUriInPublication -TcmUri "tcm:2-500-2" -TargetPubUri "tcm:0-123-1"
+	Returns "tcm:123-500-2"
+
+    .Example
+    Get-TridionTcmUriInPublication -TcmUri "tcm:2-500-2" -TargetPubUri 123
+	Returns "tcm:123-500-2"
+
+    .Example
+    Get-TridionTcmUriInPublication -TcmUri "tcm:2-500-16" -TargetPubUri "tcm:0-123-1" -Version 3
+	Returns "tcm:123-500-v3"
+    
+    #>
+    [CmdletBinding()]
+	Param(
+		# The Id of CD TopologyType
+		[Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+		[ValidateNotNullOrEmpty()]
+		[string] $TcmUri, 
+		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
+		[string] $TargetPubUri,
+		[Parameter()]
+		[string] $Version = $null
+	)
+	
+	Begin
+	{
+        $client = Get-CoreServiceClient -Verbose:($PSBoundParameters['Verbose'] -eq $true);
+	}
+	
+    Process
+    {
+        if ($client -ne $null)
+        {
+			if (-not $TargetPubUri.StartsWith('tcm:')){
+				$TargetPubUri = "tcm:0-$TargetPubUri-1"
+			}
+
+			if($Version){
+				return $client.GetTcmUri($TcmUri, $TargetPubUri, $Version);
+			}
+			else
+			{
+				return $client.GetTcmUri($TcmUri, $TargetPubUri, $null);
+			}
+        }
+    }
+	
+	End
+	{
+		Close-CoreServiceClient $client;
+	}
+}
+
 
 <#
 **************************************************
@@ -544,3 +620,4 @@ Export-ModuleMember Get-Publications
 Export-ModuleMember New-Publication
 Export-ModuleMember Set-Publication
 Export-ModuleMember Get-BusinessProcessTypes
+Export-ModuleMember Get-TcmUriInPublication
