@@ -239,6 +239,11 @@ function New-Publication
 	
 	Begin
 	{
+		$settings = Get-TridionCoreServiceSettings
+		if ($BusinessProcessType -and $settings.Version -ne "Web-8.1"){
+			Write-Error "BusinessProcessType can be only set in Core service 8.1+. Use Set-TridionCoreServiceSettings -Version Web-8.1 to use new core service."
+		}
+
         $client = Get-CoreServiceClient -Verbose:($PSBoundParameters['Verbose'] -eq $true);
 	}
 
@@ -361,6 +366,11 @@ function Set-Publication
 	
 	Begin
 	{
+		$settings = Get-TridionCoreServiceSettings
+		if ($BusinessProcessType -and $settings.Version -ne "Web-8.1"){
+			Write-Error "BusinessProcessType can be only set in Core service 8.1+. Use Set-TridionCoreServiceSettings -Version Web-8.1 to use new core service."
+		}
+
         $client = Get-CoreServiceClient -Verbose:($PSBoundParameters['Verbose'] -eq $true);
 	}
 
@@ -491,8 +501,8 @@ function Get-BusinessProcessTypes
     (Tridion.ContentManager.CoreService.Client.LinkToBusinessProcessTypeData object)
 
     .Inputs
-    None.
-
+    [string] cdTopologyTypeId: CD Topology Type Id to search BPT for
+	 
     .Outputs
     Returns a list of objects of type [Tridion.ContentManager.CoreService.Client.LinkToBusinessProcessTypeData].
 
@@ -515,6 +525,11 @@ function Get-BusinessProcessTypes
 	
 	Begin
 	{
+		$settings = Get-TridionCoreServiceSettings
+		if ($settings.Version -ne "Web-8.1"){
+			Write-Error "Get-BusinessProcessTypes only supported in Core service 8.1+. Use Set-TridionCoreServiceSettings -Version Web-8.1 to use new core service."
+		}
+
         $client = Get-CoreServiceClient -Verbose:($PSBoundParameters['Verbose'] -eq $true);
 	}
 	
