@@ -478,6 +478,61 @@ function SetPublicationProperties ($pub, [string]$Title, [string]$PublicationKey
 	}
 }
 
+function Get-BusinessProcessTypes
+{
+    <#
+    .Synopsis
+    Gets a list of Business Process Types present in Tridion Content Manager.
+
+    .Description
+    Gets a list of BusinessProcessTypeData objects containing information about all Business Process Types present in Tridion Content Manager.
+
+    For a full list, consult the Content Manager Core Service API Reference Guide documentation 
+    (Tridion.ContentManager.CoreService.Client.LinkToBusinessProcessTypeData object)
+
+    .Inputs
+    None.
+
+    .Outputs
+    Returns a list of objects of type [Tridion.ContentManager.CoreService.Client.LinkToBusinessProcessTypeData].
+
+    .Link
+    Get the latest version of this script from the following URL:
+    https://github.com/pkjaer/tridion-powershell-modules
+
+    .Example
+    Get-TridionBusinessProcessTypes -CdTopologyTypeId "Live"
+	Returns a list of all Business Process Types with CdTopologyTypeId = "Live" Tridion.
+    
+    #>
+    [CmdletBinding()]
+	Param(
+		# The Id of CD TopologyType
+		[Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+		[ValidateNotNullOrEmpty()]
+		[string] $CdTopologyTypeId
+	)
+	
+	Begin
+	{
+        $client = Get-CoreServiceClient -Verbose:($PSBoundParameters['Verbose'] -eq $true);
+	}
+	
+    Process
+    {
+        if ($client -ne $null)
+        {
+			Write-Verbose "Loading list of Business Process Types with CdTopologyTypeId: '$CdTopologyTypeId' ...";
+			return $client.GetBusinessProcessTypes($CdTopologyTypeId);
+        }
+    }
+	
+	End
+	{
+		Close-CoreServiceClient $client;
+	}
+}
+
 
 <#
 **************************************************
@@ -488,3 +543,4 @@ Export-ModuleMember Get-Item
 Export-ModuleMember Get-Publications
 Export-ModuleMember New-Publication
 Export-ModuleMember Set-Publication
+Export-ModuleMember Get-BusinessProcessTypes
